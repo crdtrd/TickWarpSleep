@@ -20,11 +20,7 @@
 		]
 	},
 	"mixins": [
-		"tickwarpsleep.mixins.json",
-		{
-			"config": "tickwarpsleep.client.mixins.json",
-			"environment": "client"
-		}
+		"tickwarpsleep.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.16.14",
