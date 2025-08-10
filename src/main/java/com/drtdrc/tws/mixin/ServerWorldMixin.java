@@ -1,9 +1,14 @@
 package com.drtdrc.tws.mixin;
 
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.SleepManager;
 import net.minecraft.world.MutableWorldProperties;
+import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,17 +21,19 @@ import net.minecraft.world.tick.TickManager;
 import java.util.List;
 
 @Mixin(ServerWorld.class)
-public abstract class ServerWorldMixin {
+public abstract class ServerWorldMixin extends World
+{
 	@Unique private boolean warping = false;
 	@Unique float sleepGameTickRate = 200;
+
+	protected ServerWorldMixin(MutableWorldProperties properties, RegistryKey<World> registryRef, DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry, boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates) {
+		super(properties, registryRef, registryManager, dimensionEntry, isClient, debugWorld, seed, maxChainedNeighborUpdates);
+	}
 
 	@Shadow public abstract TickManager getTickManager();
 	@Shadow @Final List<ServerPlayerEntity> players;
 
 	@Shadow protected abstract void wakeSleepingPlayers();
-	@Shadow abstract public void setTimeOfDay(long timeOfDay);
-
-	// @Shadow abstract public boolean isDay();
 
 	// This effectively replaces vanilla sleep logic
 	// Sleeping no longer skips weather events. You can still sleep during thunderstorms.
@@ -34,17 +41,15 @@ public abstract class ServerWorldMixin {
 	private boolean onIsEnoughPlayersSleeping(SleepManager instance, int percentage) {
 		boolean isEnoughResters = instance.canSkipNight(percentage);
 		boolean isEnoughSleepers = instance.canResetTime(percentage, players);
-		// TODO add condition for time to wake players
-		if (isEnoughResters && isEnoughSleepers) {
+
+		if (isEnoughResters && isEnoughSleepers && this.isNight()) {
 			if (!warping) {
 				warping = true;
 				this.getTickManager().setTickRate(sleepGameTickRate);
 			}
 		} else {
-			if (warping) { // && isDay()
+			if (warping) {
 				warping = false;
-//				long l = this.properties.getTimeOfDay() + 24000L;
-//				this.setTimeOfDay(l - l % 24000L);
 				this.wakeSleepingPlayers();
 				this.getTickManager().setTickRate(20f);
 			}
