@@ -37,23 +37,35 @@ public abstract class ServerWorldMixin extends World
 
 	// This effectively replaces vanilla sleep logic
 	// Sleeping no longer skips weather events. You can still sleep during thunderstorms.
+	// Speeds up time in all dimensions
 	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/SleepManager;canSkipNight(I)Z"), method = "tick")
 	private boolean onIsEnoughPlayersSleeping(SleepManager instance, int percentage) {
-		boolean isEnoughResters = instance.canSkipNight(percentage);
-		boolean isEnoughSleepers = instance.canResetTime(percentage, players);
 
-		if (isEnoughResters && isEnoughSleepers && this.isNight()) {
-			if (!warping) {
-				warping = true;
-				this.getTickManager().setTickRate(sleepGameTickRate);
-			}
-		} else {
-			if (warping) {
-				warping = false;
-				this.wakeSleepingPlayers();
-				this.getTickManager().setTickRate(20f);
-			}
+		// enough players in bed && enough players with sleep counter at 100, 5+ seconds in bed
+		boolean playerReq = instance.canSkipNight(percentage) && instance.canResetTime(percentage, players);
+		boolean night = this.isNight(); // ambient darkness >= 4
+
+		if (playerReq && night && !warping) {
+			warping = true;
+			this.getTickManager().setTickRate(sleepGameTickRate);
 		}
+		if (playerReq && !night && warping) {
+			warping = false;
+			this.wakeSleepingPlayers();
+			this.getTickManager().setTickRate(20f);
+		}
+
+		if (!playerReq && !night && warping) {
+			warping = false;
+			this.wakeSleepingPlayers();
+			this.getTickManager().setTickRate(20f);
+		}
+		if (!playerReq && night && warping) {
+			warping = false;
+			this.getTickManager().setTickRate(20f);
+		}
+
+		// returning false ensures vanilla logic is not executed
 		return false;
 	}
 }

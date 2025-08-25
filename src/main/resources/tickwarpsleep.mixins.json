@@ -3,6 +3,7 @@
   "package": "com.drtdrc.tws.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "PlayerEntityMixin",
     "ServerWorldMixin"
   ],
   "injectors": {
