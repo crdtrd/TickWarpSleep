@@ -1,17 +1,17 @@
 {
 	"schemaVersion": 1,
 	"id": "tickwarpsleep",
-	"version": "1.0.0",
+	"version": "1.1.21.8",
 	"name": "TickWarpSleep",
 	"description": "Fast forward through the night rather than skipping it",
 	"authors": [
 		"drtdrc"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/crdtrd",
+		"sources": "https://github.com/crdtrd/TickWarpSleep"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/tickwarpsleep/icon.png",
 	"environment": "*",
 	"entrypoints": {
