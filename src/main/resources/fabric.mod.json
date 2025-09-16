@@ -5,11 +5,10 @@
 	"name": "TickWarpSleep",
 	"description": "Fast forward through the night rather than skipping it",
 	"authors": [
-		"drtdrc"
+		"crdtrd"
 	],
 	"contact": {
-		"homepage": "https://github.com/crdtrd",
-		"sources": "https://github.com/crdtrd/TickWarpSleep"
+		"issues": "https://github.com/crdtrd/TickWarpSleep/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/tickwarpsleep/icon.png",
